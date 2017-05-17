@@ -1,0 +1,19 @@
+snippet u
+	#!/usr/bin/env python3
+	# -*- coding:utf-8 -*-
+	${1}
+
+snippet     stdout
+	import sys, io
+	sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+	${1}
+
+
+snippet :param
+	:param ${1:variable}: ${2:description}
+	:type ${3:variable}: ${4:type}
+
+
+snippet :rtype
+	:rtype: ${1:type}
+	:return: ${2:description}

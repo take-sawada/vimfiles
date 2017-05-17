@@ -1,0 +1,453 @@
+snippet #!
+    #!/usr/bin/env perl
+    ${1}
+
+snippet u
+    use v5.24;
+    use warnings;
+    use utf8;
+    use autodie;
+    use Encode qw/encode decode decode_utf8 encode_utf8/;
+    use Encode::Locale;
+    ${1}
+
+snippet useopen
+    use open OUT => qw/:encoding(utf8) :std/;
+    ${1}
+
+snippet d
+    use Data::Dump qw(dump);
+    warn dump 
+
+snippet dd
+    use Data::Dumper;
+    local $Data::Dumper::Indent = 1;
+    local $Data::Dumper::Terse  = 1;
+    print ${1}Dumper(${2:$reference});
+
+snippet dds
+    use Data::Dump::Streamer qw(Dumper);
+    warn Dumper 
+
+snippet ddp
+    use DDP;
+    print encode_utf8 np ${1};
+
+snippet c
+    use Carp qw/croak/;
+
+snippet new
+    sub new {
+        my $class = shift;
+        my $args = ref $_[0] ? $_[0] : +{@_};
+
+        ${1:code}
+
+        bless $args, $class;
+    }
+
+snippet l
+    use parent qw/Class::Accessor/;
+
+snippet ll
+    __PACKAGE__->mk_accessors(${1:accessors});
+
+snippet test
+    #!/usr/bin/env perl -w
+    use strict;
+    use warnings;
+    use Test::More;
+
+    subtest => sub {
+    };
+
+    done_testing;
+
+snippet argv
+    my (${1:$self}, ${2}) = @ARGV;
+
+snippet s
+    my ${1:$self} = shift @_;
+
+snippet ss
+    my (${1:$self}, ${2}) = @_;
+
+snippet plack
+    use Plack::Request;
+    sub {
+       my $req = Plack::Request->new($_[0]);
+       given ($req->path) {
+          when ('/') {
+             $req->param('');
+             return [200, ["Content-Type" => "text/html"], ['200 OK']];
+          }
+       }
+       return [404, ["Content-Type" => "text/plain"], ['404 Not Found']];
+    };
+
+snippet basic_authorization
+    my $ua = LWP::UserAgent->new;
+    my $req = HTTP::Request->new(GET => $url);
+    $req->authorization_basic($userID, $apiKey);
+
+    my $res = $ua->request($req);
+    if ($res->is_success) {
+        say $res->content;
+    }
+    else {
+        die $res->status_line;
+    }
+
+snippet file
+    use Path::Class qw(file);
+    my @lines = file(__FILE__)->dir->file('/path/to/file')->slurp;
+
+snippet r200
+    [ 200, ['Content-Type', 'text/plain'], ['200 OK'] ]
+
+snippet r404
+    [ 404, ['Content-Type', 'text/plain'], ['404 Not Found'] ]
+
+snippet openin
+    open my ${1:$in}, '<:encoding(utf8)', ${2:$path};
+
+snippet openout
+    open my ${1:$out}, '>:encoding(utf8)', ${2:$path};
+
+snippet csvnew
+    my $csv = Text::CSV->new({ binary => 1 });
+
+snippet class
+    package ${1:PackageName};
+    use strict;
+    use warnings;
+    use feature qw/say switch/;
+    use utf8;
+    use Encode qw/encode decode decode_utf8 encode_utf8/;
+    use autodie;
+    use Carp qw/confess croak/; # confessはスタックトレース付き
+
+    sub new {
+        my $class = shift;
+        my $args = ref $_[0] ? $_[0] : +{@_};
+        ${1:code}
+        bless $args, $class;
+        return $args;
+    }
+
+    1;
+
+snippet clite
+    package ${1:PackageName};
+    use strict;
+    use warnings;
+    use feature qw/say switch/;
+    use utf8;
+    use autodie;
+
+    use Class::Accessor::Lite (
+        new => 0, # newを自前で作るなら0
+        rw  => [qw(foo bar)],
+        ro  => [qw(foo_ro bar_ro)],
+        wo  => [qw(foo_wo bar_wo)],
+    );
+
+    sub new {
+        my $class = shift;
+        my $args = ref $_[0] ? $_[0] : +{@_};
+        ${1:code}
+        bless $args, $class;
+        return $args;
+    }
+
+    1;
+
+snippet moo
+    package ${1:PackageName};
+    use Moo; extends "${2:SuperClass}";
+    use feature qw/say switch/;
+    use utf8;
+    use Carp qw/confess croak/; # confessはスタックトレース付き
+
+    has accessor => (
+        is => 'rw',
+        required => 1,
+        default => sub {return $_},
+        lazy => 1,
+    );
+
+    # コンストラクタの引数がハッシュ（リファレンス）以外の場合、
+    # ここでハッシュに変換できる。不要なら削除可能
+    sub BUILDARGS {
+        my $class = shift @_;
+        if (@_ == 3 && !ref $_[0]) {
+            return { id => $_[0], page => $_[1], url => $_[2] };
+        }
+        else {
+            return \@_;
+        }
+    }
+
+    # 実質的なコンストラクタ
+    sub BUILD {
+        my $self = shift @_;
+        ...
+    }
+
+    1;
+
+snippet ex
+    use Exporter 'import';
+    our @EXPORT    = qw/${1:Subroutine}/;
+    our @EXPORT_OK = qw/${2:Subroutine}/;
+
+snippet nosub
+    sub {
+        ${1}
+    };
+
+snippet pod_perl
+    =encoding utf8
+
+    =head1 NAME
+
+    script_name - DownloadImg.pm
+
+    =head1 SYNOPSIS
+
+     use DownloadImg;
+     my $url = ...;
+     download_matome($url);
+
+    =head1 DESCRIPTION
+
+     指定したURLの画像をダウンロードします。
+     拡張子はバイナリを読んで勝手に判定して設定します。
+
+    =head1 FUNCTIONS
+
+    =head2 download_img($uri);
+
+     $uriで渡した画像をダウンロードします。
+
+    =head1 METHOD
+
+    none.
+
+    =head1 AUTHOR
+
+    Takehiro Sawada
+
+    =head1 LICENSE
+
+    Copyright (C) Takehiro Sawada
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+    =cut
+
+snippet test_base
+    use Test::Base;
+
+    plan tests => 1*blocks;
+
+    filters {
+        input    => [qw/chomp/],
+        expected => [qw/chomp/],
+    };
+
+    run {
+        my $block = shift;
+        is($class->shout($block->input), $block->expected);
+    };
+
+    __END__
+    === test 1
+    --- input
+    1
+    --- expected
+    [1]
+
+snippet test_komoku
+    __END__
+    === ${1:test name}
+    --- input
+    ${2:input value}
+    --- expected
+    ${3:output value}
+
+snippet ikki
+    my ${1:$str} = do { local $/; <${2:$in}> };
+
+snippet feature
+    use feature qw/say switch/;
+
+# Function
+snippet sub
+    sub ${1:function_name} {
+        ${2:#body ...}
+    }
+
+# Conditional
+snippet if
+    if (${1:...}) {
+        ${2:# body...}
+    }
+
+# Conditional if..else
+snippet ife
+    if (${1:...}) {
+        ${2:# body...}
+    }
+    else {
+        ${3:# else...}
+    }
+
+# Conditional if..elsif..else
+snippet ifee
+    if (${1:...}) {
+        ${2:# body...}
+    }
+    elsif (${3:...}) {
+        ${4:# elsif...}
+    }
+    else {
+        ${5:# else...}
+    }
+
+# Conditional One-line
+snippet xif
+    ${1:expression} if ${2:condition};${3}
+
+# Unless conditional
+snippet unless
+    unless (${1}) {
+        ${2:# body...}
+    }
+
+# Unless conditional One-line
+snippet xunless
+    ${1:expression} unless ${2:condition};${3}
+
+# Try/Except
+snippet eval
+    eval {
+        ${1:# do something risky...}
+    };
+    if ($@) {
+        ${2:# handle failure...}
+    }
+
+# While Loop
+snippet wh
+    while (${1}) {
+        ${2:# body...}
+    }
+
+# While Loop One-line
+snippet xwh
+    ${1:expression} while ${2:condition};${3}
+
+# C-style For Loop
+snippet cfor
+    for (my $${2:var} = 0; $$2 < ${1:count}; $$2${3:++})
+    {
+        ${4:# body...}
+    }
+
+# For loop one-line
+snippet xfor
+    ${1:expression} for @${2:array};${3}
+
+# Foreach Loop
+snippet for
+    for my $${1:x} (@${2:array}) {
+        ${3:# body...}
+    }
+
+snippet find_encoding
+    my $enc = find_encoding('${1:utf-8}');
+
+snippet overload
+    use overload q/""/ => "${1:sub overload string}",
+                 q/+/  => "${1:sub overload plus}",
+                 q/-/  => "${1:sub overload minus}";
+
+snippet grep
+    my ${1:@result} = grep m/xxx/, ${2:@list};
+
+snippet xgrep
+    my ${1:@result} = grep { s/xxx/yyy/xms } ${2:@list};
+
+snippet map
+    my ${1:@result} = map m/xxx/, ${2:@list};
+
+snippet xmap
+    my ${1:@result} = map { s/xxx/yyy/xms } ${2:@list};
+
+snippet given
+    given (${1:$var}) {
+        when (/${2:$data}/) { $abc = 1 }
+        when (/${3:$data}/) { $def = 1 }
+        when (/${4:$data}/) { $xyz = 1 }
+        default { $nothing = 1 }
+    }
+
+snippet getoptlong
+    use Getopt::Long qw/GetOptions :config posix_default no_ignore_case bundling auto_help/;
+    use Pod::Usage qw/pod2usage/;
+
+
+    # 受け取るoptionの定義とオプションのデフォルト値
+    # s=文字列型, i=整数型, f=実数型, @=同optionを複数回指定可, 型なし=boolean
+    my @def = qw/mac|m win|w dic|d=s@ prefix|p=s suffix|s=s/;
+    my $opt = {prefix => 'new_'};
+
+    main();
+
+
+    sub main {
+        GetOptions $opt, @def or pod2usage(1);
+        pod2usage verbose => 99 if $opt->{help};
+
+        # 解析した以外の引数が必要ならここでチェック
+        pod2usage "Pleas set \@ARGV\n" unless @ARGV;
+
+        # 必須オプションのチェック
+        my @undefopts = grep {!exists $opt->{$_}} qw/dic prefix suffix/;
+        pod2usage qq/Please set option "@undefopts".\n/ if @undefopts;
+
+        # write code !!
+    }
+
+snippet sort
+    my ${1:@sorted} = sort {$a ${2:cmp} $b} ${3:@list};
+
+snippet utf8mac
+    use Encode::Locale;
+
+    # change locale_fs "utf-8" to "utf-8-mac"
+    if ($^O eq 'darwin') {
+        require Encode::UTF8Mac;
+        $Encode::Locale::ENCODING_LOCALE_FS = 'utf-8-mac';
+    }
+
+snippet binmode
+options     head
+    binmode STDIN,  "${1::encoding(utf8)}";
+    binmode STDOUT, "${2::encoding(utf8)}";
+    binmode STDERR, "${3::encoding(utf8)}";
+    ${4}
+
+snippet datetime
+    my $dt = DateTime->new(
+        year       => 1964,
+        month      => 10,
+        day        => 16,
+        hour       => 16,
+        minute     => 12,
+        second     => 47,
+        time_zone  => 'Asia/Taipei',
+    );
+
